@@ -10,6 +10,9 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# ✅ Install Node.js, npm, and Prettier globally
+RUN apt update && apt install -y nodejs npm && npm install -g prettier
+
 # Copy the rest of the application code
 COPY . .
 

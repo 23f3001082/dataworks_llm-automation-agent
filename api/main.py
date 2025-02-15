@@ -21,10 +21,9 @@ def read_data(path: str):
     except PermissionError:
         raise HTTPException(status_code=403, detail="Access outside /data/ is restricted.")
     except Exception as e:
-        print("Error:", traceback.format_exc())  # Debugging logs
+        print("Error:", traceback.format_exc())
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-# Define a Pydantic model for the JSON request
 class TaskRequest(BaseModel):
     task: str
 
@@ -42,5 +41,5 @@ def run_task(request: TaskRequest):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        print("Error:", traceback.format_exc())  # Debugging logs
+        print("Error:", traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
