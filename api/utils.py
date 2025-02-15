@@ -53,3 +53,62 @@ def list_files(directory_path: str, extension: str = None):
         files = [file for file in files if file.endswith(extension)]
     
     return files
+
+
+def sort_json(input_path, output_path):
+    """Sorts a JSON file alphabetically by last_name and saves it to output file."""
+    
+    # ✅ Debugging: Print file paths
+    print(f"DEBUG: Checking input file - {input_path}")
+
+    if not os.path.exists(input_path):
+        return f"Error: File {input_path} not found"
+
+    try:
+        with open(input_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        # ✅ Ensure data is a list before sorting
+        if not isinstance(data, list):
+            return f"Error: Expected a JSON array but found {type(data)}"
+
+        # ✅ Sort contacts by last name
+        sorted_data = sorted(data, key=lambda x: x.get("last_name", "").lower())
+
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(sorted_data, f, indent=4)
+
+        # ✅ Debugging: Print confirmation
+        print(f"DEBUG: Sorted contacts saved to {output_path}")
+
+        return f"Sorted contacts successfully saved to {output_path}"
+
+    except Exception as e:
+        return f"Error sorting JSON: {str(e)}"
+
+import re
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data"))
+
+def extract_email(file_path: str):
+    """Extracts sender's email address from a text file."""
+    
+    # ✅ Convert relative path to absolute path
+    real_path = os.path.abspath(os.path.join(BASE_DIR, os.path.basename(file_path)))
+
+    # ✅ Debugging: Print real path
+    print(f"DEBUG: Looking for file at {real_path}")
+
+    if not os.path.exists(real_path):
+        return f"Error: File {real_path} not found"
+
+    with open(real_path, "r", encoding="utf-8") as f:
+        content = f.read()
+    
+    match = re.search(r"From:\s*\"?.*?\"?\s*<([^>]+)>", content)
+
+    if match:
+        sender_email = match.group(1)
+        return f"Extracted sender email: {sender_email}"
+    else:
+        return "No sender email found."

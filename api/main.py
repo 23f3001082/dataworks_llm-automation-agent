@@ -40,7 +40,7 @@ def run_task(request: TaskRequest):
         result = execute_task(task_description)
         return {"status": "success", "result": result}
     except ValueError as e:
-        return {"error": str(e)}
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         print("Error:", traceback.format_exc())  # Debugging logs
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
