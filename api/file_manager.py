@@ -3,6 +3,7 @@ import os
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data"))
 
 def read_file(path: str) -> str:
+    
     """Reads a file and returns its content as a string."""
     print(f"DEBUG: Requested file path - {path}")
     full_path = os.path.abspath(os.path.join(BASE_DIR, os.path.basename(path)))
@@ -22,11 +23,11 @@ def read_file(path: str) -> str:
     print(f"DEBUG: File read successfully - {len(content)} characters")
     return content
 
+
 def list_files(directory_path: str, extension: str = None):
     """Lists all files in a directory with an optional extension filter."""
     if not os.path.exists(directory_path):
         raise FileNotFoundError(f"Directory {directory_path} not found.")
-
     files = os.listdir(directory_path)
     if extension:
         files = [file for file in files if file.endswith(extension)]

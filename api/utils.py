@@ -2,6 +2,8 @@ import subprocess
 import json
 import os
 from datetime import datetime
+import re
+
 
 def execute_shell(command: str):
     """Executes a shell command and returns the output."""
@@ -50,17 +52,34 @@ def sort_json(input_path: str, output_path: str):
     except Exception as e:
         return f"Error sorting JSON: {str(e)}"
 
-def extract_email(file_path: str):
-    """Extracts sender's email address from a text file."""
-    real_path = os.path.abspath(os.path.join(BASE_DIR, os.path.basename(file_path)))
-    print(f"DEBUG: Looking for file at {real_path}")
-    if not os.path.exists(real_path):
-        return f"Error: File {real_path} not found"
-    with open(real_path, "r", encoding="utf-8") as f:
+
+def extract_sender_email(file_path: str, output_path: str):
+    """
+    Extracts the sender's email address from a text file and writes it to an output file.
+    Args:
+        file_path (str): Path to the email file.
+        output_path (str): Path to save the extracted email.
+    Returns:
+        str: Success or error message.
+    """
+    # Ensure the file exists
+    if not os.path.exists(file_path):
+        return f"Error: File {file_path} not found."
+
+    # Read the file content
+    with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
+
+    # Use regex to extract the sender's email address
     match = re.search(r"From:\s*\"?.*?\"?\s*<([^>]+)>", content)
     if match:
         sender_email = match.group(1)
-        return f"Extracted sender email: {sender_email}"
+        # Write the email to the output file
+        try:
+            with open(output_path, "w", encoding="utf-8") as f:
+                f.write(sender_email)
+            return f"Sender email extracted and saved to {output_path}"
+        except Exception as e:
+            return f"Error writing to {output_path}: {str(e)}"
     else:
-        return "No sender email found."
+        return "No sender email found in the file."
