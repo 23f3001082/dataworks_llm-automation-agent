@@ -23,12 +23,14 @@ def execute_task(task_description: str):
     if "install uv" in parsed_task or "datagen.py" in parsed_task:
         return install_uv_and_run_datagen()
     
+    #A2 failed: Command '['npx', 'prettier@3.4.2', '--stdin-filepath', '/data/format.md']' returned non-zero exit status 1.
+
     # ✅ Task A2: Format Markdown File
-    elif any(keyword in parsed_task for keyword in ["format markdown", "prettier", "format md", "format markdown file"]):
+    elif any(keyword in parsed_task for keyword in ["format markdown", "prettier", "format md","format",'npx', 'prettier@3.4.2', '--stdin-filepath', '/data/format.md', "format markdown file"]):
         return format_markdown(os.path.join(BASE_DIR, "format.md"))
 
     # ✅ Task A3: Count Weekdays
-    elif parsed_task.startswith("count ") and parsed_task.split()[1] in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]:
+    elif (parsed_task.startswith("count") or parsed_task.endswith("count") ) and parsed_task.split()[1] in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday","mondays", "tuesdays", "wednesdays", "thursdays", "fridays", "saturdays", "sundays"]:
         weekday = parsed_task.split()[1]  # Extract weekday dynamically
         return count_weekdays(os.path.join(BASE_DIR, "dates.txt"), weekday)
     

@@ -27,6 +27,7 @@ if __name__ == "__main__":
     weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     for day in weekdays:
         test_task(f"Count {day}")
+        #test_task(f" {day} Count")
 
     # A4: Sort contacts
     test_task("Sort contacts in /data/contacts.json")

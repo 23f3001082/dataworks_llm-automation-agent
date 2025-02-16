@@ -57,7 +57,7 @@ async def run_task(task: str = Query(..., description="Plain-English task descri
         if len(words) >= 2 and words[0].lower() == "count":
             weekday = words[1]  # Extract "Monday" from "Count Monday"
             if weekday.capitalize() in [
-                "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+                "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays", "Sundays"
             ]:
                 result = count_weekdays(os.path.join(BASE_DIR, "dates.txt"), weekday)
             else:
