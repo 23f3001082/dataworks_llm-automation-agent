@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 import traceback
 import os
+
 from api.file_manager import read_file
 from api.task_processor import execute_task, count_weekdays
 
@@ -10,19 +11,21 @@ app = FastAPI()
 # Define the base directory for resolving file paths
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data"))
 
+
 @app.get("/")
 def home():
     return {"message": "LLM Automation Agent is Running 🚀"}
 
+
 @app.get("/read")
-def read_data(path: str = Query(..., description="Path of the file to read")):
-    """Reads a file from the /data directory."""
+def read_data(path: str):
+    """Endpoint to read a file from the /data directory."""
     
-    full_path = os.path.join(BASE_DIR, os.path.basename(path))  # Prevent directory traversal
-    print(f"DEBUG: Requested file path - {full_path}")
+    print(f"DEBUG: path - {path}")
+    print(f"DEBUG: BASE_DIR - {BASE_DIR}")
 
     try:
-        content = read_file(full_path)
+        content = read_file(path)
         return {"status": "success", "content": content}
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="File Not Found")
@@ -32,8 +35,10 @@ def read_data(path: str = Query(..., description="Path of the file to read")):
         print("ERROR:", traceback.format_exc())
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 class TaskRequest(BaseModel):
     task: str
+
 
 @app.post("/run")
 async def run_task(task: str = Query(..., description="Plain-English task description")):
@@ -45,13 +50,16 @@ async def run_task(task: str = Query(..., description="Plain-English task descri
         raise HTTPException(status_code=400, detail="Task description is required")
 
     try:
-        if "count" in task_description.lower():
-            words = task_description.split()
-            if len(words) >= 2:  # Ensure valid input
-                weekday = words[1]  # e.g., "Monday" from "Count Monday"
+        # Extract weekday dynamically (e.g., "Count Monday")
+        words = task_description.split()
+        if len(words) >= 2 and words[0].lower() == "count":
+            weekday = words[1]  # Extract "Monday" from "Count Monday"
+            if weekday.capitalize() in [
+                "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+            ]:
                 result = count_weekdays(os.path.join(BASE_DIR, "dates.txt"), weekday)
             else:
-                raise ValueError("Invalid format. Use 'Count <Weekday>'")
+                raise ValueError("Invalid weekday. Use a valid day name (e.g., Monday)")
         else:
             result = execute_task(task_description)
 

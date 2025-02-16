@@ -42,12 +42,14 @@ def execute_task(task_description: str):
     
     # ✅ Task A6: Extract Credit Card from Image
     elif "extract credit card" in parsed_task or "credit card number" in parsed_task:
-        return extract_credit_card_number(os.path.join(BASE_DIR, "credit-card.png"), os.path.join(BASE_DIR, "credit-card.txt"))
+        return extract_credit_card_number(os.path.join(BASE_DIR, "credit_card.png"), os.path.join(BASE_DIR, "credit_card.txt"))
     
     # ✅ Task A7: Create Markdown Index
     elif "markdown index" in parsed_task or "create index" in parsed_task:
         return create_markdown_index("/data/docs", "/data/docs/index.json") 
 
+    elif "get recent logs" in parsed_task:
+        return get_recent_logs("/data/logs", "/data/recent-logs.txt")
 
     # ❌ Unrecognized Task
     else:
@@ -179,32 +181,76 @@ def extract_credit_card_number(image_path: str, output_path: str):
     
     
     # ✅ Ensure the function is defined
-def create_markdown_index(directory_path: str, output_path: str):
-    """Creates an index of Markdown files with their first H1 title."""
+# def create_markdown_index(directory_path: str, output_path: str):
+#     """Creates an index of Markdown files with their first H1 title."""
     
+#     if not os.path.exists(directory_path):
+#         return f"Error: Directory {directory_path} not found."
+
+#     md_files = []
+#     for root, _, files in os.walk(directory_path):
+#         for file in files:
+#             if file.endswith(".md"):
+#                 relative_path = os.path.relpath(os.path.join(root, file), directory_path)
+#                 md_files.append(relative_path)
+
+#     index = {}
+#     for md_file in md_files:
+#         full_path = os.path.join(directory_path, md_file)
+#         with open(full_path, "r", encoding="utf-8") as f:
+#             for line in f:
+#                 if line.startswith("# "):
+#                     title = line.strip("# ").strip()
+#                     index[md_file] = title
+#                     break  
+
+#     try:
+#         with open(output_path, "w", encoding="utf-8") as f:
+#             json.dump(index, f, indent=4)
+#         return f"✅ Markdown index created at {output_path}"
+#     except Exception as e:
+#         return f"Error writing index file: {str(e)}"
+
+
+def create_markdown_index(directory_path: str, output_path: str):
+    """
+    Creates an index of Markdown files with their first H1 title.
+    Args:
+        directory_path (str): Path to the directory containing Markdown files.
+        output_path (str): Path to save the index JSON file.
+    Returns:
+        str: Success or error message.
+    """
     if not os.path.exists(directory_path):
         return f"Error: Directory {directory_path} not found."
 
-    md_files = []
-    for root, _, files in os.walk(directory_path):
-        for file in files:
-            if file.endswith(".md"):
-                relative_path = os.path.relpath(os.path.join(root, file), directory_path)
-                md_files.append(relative_path)
-
     index = {}
-    for md_file in md_files:
-        full_path = os.path.join(directory_path, md_file)
-        with open(full_path, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.startswith("# "):
-                    title = line.strip("# ").strip()
-                    index[md_file] = title
-                    break  
+    for file in os.listdir(directory_path):
+        if file.endswith(".md"):
+            with open(os.path.join(directory_path, file), "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.startswith("# "):
+                        index[file] = line.strip("# ").strip()
+                        break
 
-    try:
-        with open(output_path, "w", encoding="utf-8") as f:
-            json.dump(index, f, indent=4)
-        return f"✅ Markdown index created at {output_path}"
-    except Exception as e:
-        return f"Error writing index file: {str(e)}"
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(index, f, indent=4)
+
+    return f"Markdown index created at {output_path}"
+
+def get_recent_logs(directory_path: str, output_path: str):
+    """Writes the first line of the 10 most recent .log files to a file."""
+    if not os.path.exists(directory_path):
+        return f"Error: Directory {directory_path} not found"
+
+    log_files = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if f.endswith(".log")]
+    log_files.sort(key=os.path.getmtime, reverse=True)
+
+    recent_logs = log_files[:10]
+    first_lines = []
+    for log_file in recent_logs:
+        with open(log_file, "r", encoding="utf-8") as f:
+            first_lines.append(f.readline().strip())
+
+    write_to_file(output_path, "\n".join(first_lines))
+    return f"✅ First lines of 10 most recent logs written to {output_path}"

@@ -1,11 +1,8 @@
 fastapi
 uvicorn
-openai
 numpy
 requests
-pydantic
 faker
-pytesseract
 openai==1.63.0
 opencv-python==4.11.0.86
 pandas==2.2.3

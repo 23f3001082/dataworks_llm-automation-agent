@@ -13,6 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ✅ Install Node.js, npm, and Prettier globally
 RUN apt update && apt install -y nodejs npm && npm install -g prettier
 
+RUN apt update && apt install -y tesseract-ocr
+
 # Copy the rest of the application code
 COPY . .
 
