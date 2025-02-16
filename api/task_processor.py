@@ -46,10 +46,10 @@ def execute_task(task_description: str):
     
     # ✅ Task A7: Create Markdown Index
     elif "markdown index" in parsed_task or "create index" in parsed_task:
-        return create_markdown_index("/data/docs", "/data/docs/index.json") 
+        return create_markdown_index("./data/docs/", "./data/docs/index.json") 
 
     elif "get recent logs" in parsed_task:
-        return get_recent_logs("/data/logs", "/data/recent-logs.txt")
+        return get_recent_logs("./data/logs/", "./data/recent-logs.txt")
 
     # ❌ Unrecognized Task
     else:
@@ -221,6 +221,11 @@ def create_markdown_index(directory_path: str, output_path: str):
     Returns:
         str: Success or error message.
     """
+    # if not os.path.exists(directory_path):
+    #     return f"Error: Directory {directory_path} not found."
+
+
+    directory_path = os.path.abspath(directory_path) + "/"  # Ensure trailing slash
     if not os.path.exists(directory_path):
         return f"Error: Directory {directory_path} not found."
 
@@ -240,8 +245,12 @@ def create_markdown_index(directory_path: str, output_path: str):
 
 def get_recent_logs(directory_path: str, output_path: str):
     """Writes the first line of the 10 most recent .log files to a file."""
+    # if not os.path.exists(directory_path):
+    #     return f"Error: Directory {directory_path} not found"
+
+    directory_path = os.path.abspath(directory_path) + "/"  # Ensure trailing slash
     if not os.path.exists(directory_path):
-        return f"Error: Directory {directory_path} not found"
+        return f"Error: Directory {directory_path} not found."
 
     log_files = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if f.endswith(".log")]
     log_files.sort(key=os.path.getmtime, reverse=True)

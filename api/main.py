@@ -1,10 +1,12 @@
-from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
-import traceback
+from fastapi import FastAPI, HTTPException, Query
 import os
+import traceback
 
-from api.file_manager import read_file
-from api.task_processor import execute_task, count_weekdays
+# Import from the same `api` package
+from .file_manager import read_file
+from .task_processor import execute_task, count_weekdays
+
 
 app = FastAPI()
 
